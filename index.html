@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="margin:0">
+<title>Marketolog — презентация проекта</title>
+<style>
+  :root {
+    --bg: #080d1c;
+    --bg-raise: #0b1226;
+    --panel: #0e1730;
+    --panel-2: #111c3b;
+    --line: #223052;
+    --line-soft: #1a2544;
+    --brand: #4f7cff;
+    --brand-soft: #9db4ff;
+    --brand-dim: rgba(79, 124, 255, 0.14);
+    --text: #e9eefc;
+    --muted: #8d9ac0;
+    --faint: #5f6c94;
+    --amber: #f5b759;
+    --green: #43d9a3;
+    --rose: #f0708c;
+    --sky: #5fc3e8;
+    --sans: "SF Pro Display", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "SF Mono", ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  html {
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: rgba(79, 124, 255, 0.35); }
+
+  /* ---------- progress bar ---------- */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, var(--brand), var(--brand-soft));
+    z-index: 50;
+  }
+
+  /* ---------- dots rail ---------- */
+  #rail {
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 40;
+  }
+  #rail a {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--faint);
+    opacity: 0.45;
+    transition: all 0.25s ease;
+    display: block;
+  }
+  #rail a.active {
+    background: var(--brand);
+    opacity: 1;
+    transform: scale(1.45);
+    box-shadow: 0 0 10px rgba(79, 124, 255, 0.6);
+  }
+  #rail a:focus-visible {
+    outline: 2px solid var(--brand-soft);
+    outline-offset: 3px;
+    opacity: 1;
+  }
+  @media (max-width: 860px) { #rail { display: none; } }
+
+  /* ---------- slide skeleton ---------- */
+  .slide {
+    min-height: 100vh;
+    min-height: 100svh;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 72px 32px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .slide-inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brand-soft);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .eyebrow::after {
+    content: "";
+    height: 1px;
+    width: 64px;
+    background: linear-gradient(90deg, var(--brand), transparent);
+  }
+  .eyebrow .n { color: var(--faint); }
+
+  h2 {
+    font-size: clamp(30px, 4.4vw, 50px);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-wrap: balance;
+    margin-bottom: 16px;
+  }
+  .lede {
+    color: var(--muted);
+    font-size: clamp(16px, 1.7vw, 19px);
+    max-width: 62ch;
+    margin-bottom: 40px;
+  }
+  .lede strong, .lede b { color: var(--text); font-weight: 600; }
+
+  /* ---------- cards / grids ---------- */
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 900px) { .g3, .g4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .card h3 {
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card p { color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+  .card p code, .lede code, td code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--brand-dim);
+    color: var(--brand-soft);
+    padding: 1px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  .glyph {
+    width: 30px; height: 30px;
+    flex: none;
+    border-radius: 8px;
+    background: var(--brand-dim);
+    color: var(--brand-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .glyph svg { width: 16px; height: 16px; }
+
+  /* ---------- stat tiles ---------- */
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .stat .num {
+    font-size: clamp(30px, 3.4vw, 42px);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    color: var(--brand-soft);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .stat .lbl {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+
+  /* ---------- chips / pills ---------- */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: var(--bg-raise);
+    white-space: nowrap;
+  }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); flex: none; }
+  .pill.p-slate  { color: #aab4cf; }
+  .pill.p-amber  { color: var(--amber);  border-color: rgba(245,183,89,.35);  background: rgba(245,183,89,.08); }
+  .pill.p-amber .dot { background: var(--amber); }
+  .pill.p-green  { color: var(--green);  border-color: rgba(67,217,163,.35);  background: rgba(67,217,163,.08); }
+  .pill.p-green .dot { background: var(--green); }
+  .pill.p-sky    { color: var(--sky);    border-color: rgba(95,195,232,.35);  background: rgba(95,195,232,.08); }
+  .pill.p-sky .dot { background: var(--sky); }
+  .pill.p-brand  { color: var(--brand-soft); border-color: rgba(79,124,255,.4); background: var(--brand-dim); }
+  .pill.p-brand .dot { background: var(--brand); }
+  .pill.p-rose   { color: var(--rose);   border-color: rgba(240,112,140,.35); background: rgba(240,112,140,.08); }
+  .pill.p-rose .dot { background: var(--rose); }
+
+  .arrow { color: var(--faint); font-family: var(--mono); flex: none; }
+
+  /* ---------- hero ---------- */
+  #hero {
+    border-bottom: 1px solid var(--line-soft);
+    background:
+      radial-gradient(900px 500px at 75% 30%, rgba(79, 124, 255, 0.13), transparent 65%),
+      radial-gradient(700px 500px at 15% 85%, rgba(79, 124, 255, 0.07), transparent 60%),
+      repeating-linear-gradient(0deg, transparent 0 79px, rgba(79,124,255,0.045) 79px 80px),
+      repeating-linear-gradient(90deg, transparent 0 79px, rgba(79,124,255,0.045) 79px 80px);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 56px;
+    align-items: center;
+  }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } }
+
+  .hero-brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--brand-soft);
+    margin-bottom: 26px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-brand .mark {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--brand), #7d9dff);
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 24px rgba(79,124,255,0.45);
+  }
+  .hero-brand .mark svg { width: 18px; height: 18px; }
+  h1 {
+    font-size: clamp(42px, 6.4vw, 76px);
+    font-weight: 780;
+    letter-spacing: -0.03em;
+    line-height: 1.03;
+    text-wrap: balance;
+    margin-bottom: 22px;
+  }
+  h1 .accent { color: var(--brand-soft); }
+  .hero-sub {
+    color: var(--muted);
+    font-size: clamp(16px, 1.8vw, 19px);
+    max-width: 54ch;
+    margin-bottom: 34px;
+  }
+  .hero-sub b { color: var(--text); font-weight: 600; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  .hint {
+    position: absolute;
+    bottom: 26px; left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--faint);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hint kbd {
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    background: var(--bg-raise);
+  }
+
+  /* ---------- demo post card ---------- */
+  .postcard {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 380px;
+    margin-left: auto;
+    box-shadow: 0 30px 80px rgba(3, 8, 24, 0.7), 0 0 0 1px rgba(79,124,255,0.07);
+  }
+  @media (max-width: 900px) { .postcard { margin-left: 0; } }
+  .pc-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .pc-ava {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: conic-gradient(from 210deg, var(--brand), #8aa5ff, var(--brand));
+    flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #fff;
+  }
+  .pc-name { font-size: 14px; font-weight: 650; line-height: 1.25; }
+  .pc-name span { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: var(--faint); letter-spacing: 0.06em; }
+  .pc-status { margin-left: auto; }
+  .pc-img {
+    aspect-ratio: 1 / 1;
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 20% 15%, #24407f 0%, transparent 55%),
+      radial-gradient(110% 100% at 85% 80%, #17284f 0%, transparent 60%),
+      linear-gradient(150deg, #101d3f, #0a1128);
+    overflow: hidden;
+  }
+  .pc-img::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg, transparent 38%, rgba(157,180,255,0.14) 50%, transparent 62%);
+    transform: translateX(-100%);
+    animation: shimmer 3.2s ease-in-out infinite;
+  }
+  @keyframes shimmer { 55% { transform: translateX(100%); } 100% { transform: translateX(100%); } }
+  .pc-img .scene {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+  }
+  .pc-img .cup {
+    width: 84px; height: 84px; border-radius: 22px;
+    background: linear-gradient(135deg, var(--brand) 0%, #7fa0ff 100%);
+    box-shadow: 0 16px 44px rgba(79,124,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pc-img .cup svg { width: 40px; height: 40px; }
+  .pc-img .tagline {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(233, 238, 252, 0.55);
+  }
+  .pc-body { padding: 16px 18px 18px; }
+  .pc-caption {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #ccd6f2;
+    min-height: 64px;
+  }
+  .pc-caption .caret {
+    display: inline-block;
+    width: 7px; height: 15px;
+    background: var(--brand-soft);
+    vertical-align: -2px;
+    margin-left: 2px;
+    animation: blink 0.9s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .pc-tags {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--brand-soft);
+    margin-top: 10px;
+    min-height: 18px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .pc-tags.show { opacity: 1; }
+
+  /* ---------- flow / pipeline rows ---------- */
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 22px 24px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+
+  /* ---------- step list ---------- */
+  .steps { display: grid; gap: 0; counter-reset: step; }
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 20px;
+    padding: 20px 4px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .step:last-child { border-bottom: none; }
+  .step .no {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+  }
+  .step h3 { font-size: 17px; font-weight: 650; margin-bottom: 4px; }
+  .step p { color: var(--muted); font-size: 14.5px; max-width: 74ch; }
+  .step p code { font-family: var(--mono); font-size: 0.86em; background: var(--brand-dim); color: var(--brand-soft); padding: 1px 6px; border-radius: 5px; }
+
+  /* ---------- tables ---------- */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 18px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 500;
+    background: var(--bg-raise);
+  }
+  td { color: var(--muted); }
+  td:first-child { color: var(--text); font-weight: 550; white-space: nowrap; }
+
+  /* ---------- schema cards ---------- */
+  .schema { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .schema header {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--bg-raise);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .schema header b { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--brand-soft); }
+  .schema header span { font-size: 12px; color: var(--faint); }
+  .schema ul { list-style: none; padding: 12px 18px 14px; display: grid; gap: 5px; }
+  .schema li {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    display: flex; justify-content: space-between; gap: 14px;
+  }
+  .schema li i { font-style: normal; color: var(--faint); }
+  .schema li.rel { color: var(--green); }
+  .schema li.rel i { color: rgba(67,217,163,0.6); }
+
+  /* ---------- architecture diagram ---------- */
+  .arch { display: grid; gap: 14px; }
+  .arch-row { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); align-items: stretch; }
+  @media (max-width: 720px) { .arch-row { grid-template-columns: 1fr; } }
+  .node {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .node.brand { border-color: rgba(79,124,255,0.45); background: linear-gradient(180deg, rgba(79,124,255,0.09), var(--panel)); }
+  .node.ext { border-style: dashed; }
+  .node b { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 650; margin-bottom: 5px; }
+  .node p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+  .node .tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); display: block; margin-bottom: 8px; }
+  .link-lbl {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .link-lbl::before, .link-lbl::after {
+    content: ""; height: 1px; flex: 1; max-width: 120px;
+    background: linear-gradient(90deg, transparent, var(--line));
+  }
+  .link-lbl::after { background: linear-gradient(90deg, var(--line), transparent); }
+
+  /* ---------- checklist ---------- */
+  .check { list-style: none; display: grid; gap: 11px; }
+  .check li { display: flex; gap: 12px; color: var(--muted); font-size: 15px; align-items: baseline; }
+  .check li::before {
+    content: "✓";
+    color: var(--green);
+    font-family: var(--mono);
+    font-weight: 700;
+    flex: none;
+  }
+  .check b { color: var(--text); font-weight: 600; }
+  .check code { font-family: var(--mono); font-size: 0.85em; background: var(--brand-dim); color: var(--brand-soft); padding: 1px 6px; border-radius: 5px; }
+
+  /* ---------- terminal ---------- */
+  .term {
+    background: #060b18;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+  .term header {
+    display: flex; gap: 6px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .term header i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  .term pre {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: #b9c5e6;
+    white-space: pre;
+  }
+  .term .c { color: var(--faint); }
+  .term .b { color: var(--brand-soft); }
+
+  /* ---------- final ---------- */
+  #final { border-bottom: none; }
+  #final .slide-inner { text-align: center; }
+  #final h2 { font-size: clamp(34px, 5vw, 58px); }
+  .foot {
+    margin-top: 48px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+</style>
+
+<div id="progress"></div>
+
+<nav id="rail" aria-label="Слайды"></nav>
+
+<!-- ═══════════════ 01 · ТИТУЛ ═══════════════ -->
+<section class="slide" id="hero" data-title="Титул">
+  <div class="slide-inner">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-brand">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-7 18-2.5-7.5L3 11z"/></svg>
+          </span>
+          Marketolog · smmpromote.co
+        </div>
+        <h1>AI-маркетолог, который сам ведёт <span class="accent">Instagram и Facebook</span> вашего бизнеса</h1>
+        <p class="hero-sub">B2B SaaS-платформа: искусственный интеллект генерирует посты с изображениями под нишу и бренд клиента, администратор модерирует, планировщик публикует через <b>Meta Graph API</b>. Без публичной регистрации — аккаунты выдаются вручную.</p>
+        <div class="hero-tags">
+          <span class="pill p-brand"><span class="dot"></span>Next.js 14</span>
+          <span class="pill"><span class="dot"></span>Prisma + PostgreSQL</span>
+          <span class="pill"><span class="dot"></span>OpenAI GPT + gpt-image-1</span>
+          <span class="pill"><span class="dot"></span>Meta Graph API v21</span>
+        </div>
+      </div>
+
+      <figure class="postcard" aria-label="Демо: сгенерированный пост">
+        <div class="pc-head">
+          <span class="pc-ava">A</span>
+          <div class="pc-name">Acme Studio<span>niche: креативное агентство</span></div>
+          <span class="pc-status"><span class="pill p-slate" id="pc-status"><span class="dot"></span><span id="pc-status-text">Черновик</span></span></span>
+        </div>
+        <div class="pc-img">
+          <div class="scene">
+            <span class="cup" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.2L20 8l-4 4 1 5.6L12 15l-5 2.6L8 12 4 8l5.6-.8L12 2z"/></svg>
+            </span>
+            <span class="tagline">AI generated · 1080×1080</span>
+          </div>
+        </div>
+        <div class="pc-body">
+          <p class="pc-caption"><span id="pc-text"></span><span class="caret" id="pc-caret"></span></p>
+          <p class="pc-tags" id="pc-tags">#маркетинг #дизайн #бизнес #acmestudio</p>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="hint"><kbd>↓</kbd> листайте <span>·</span> <kbd>←</kbd><kbd>→</kbd> слайды</div>
+</section>
+
+<!-- ═══════════════ 02 · ПРОДУКТ ═══════════════ -->
+<section class="slide" data-title="Продукт">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">02</span> Продукт</p>
+    <h2>SMM-отдел в одной подписке</h2>
+    <p class="lede">Малому бизнесу нужен контент каждый день, но нанимать маркетолога дорого. Marketolog закрывает весь цикл: <strong>придумать → написать → нарисовать → согласовать → опубликовать</strong> — от клиента требуется только описать свой бизнес и нажать «Сгенерировать».</p>
+    <div class="grid g4">
+      <div class="stat"><div class="num">2</div><div class="lbl">платформы публикации — Facebook Page и Instagram Business</div></div>
+      <div class="stat"><div class="num">10</div><div class="lbl">форматов контента: советы, мифы, чек-листы, кейсы, сторителлинг…</div></div>
+      <div class="stat"><div class="num">3</div><div class="lbl">языка генерации — русский, английский, армянский</div></div>
+      <div class="stat"><div class="num">6</div><div class="lbl">постов в день на клиента — честный лимит по его таймзоне</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 03 · МОДЕЛЬ ═══════════════ -->
+<section class="slide" data-title="Бизнес-модель">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">03</span> Бизнес-модель</p>
+    <h2>Управляемые аккаунты, месячная подписка</h2>
+    <p class="lede">Публичной регистрации нет — это осознанное продуктовое решение. Администратор сам создаёт клиента, выдаёт логин и пароль и включает доступ после оплаты. Продажа и онбординг остаются в руках владельца сервиса.</p>
+    <div class="grid g3">
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>Админ создаёт аккаунт</h3>
+        <p>Email или username, временный пароль, роль. Клиент получает доступ вручную — ни signup-страницы, ни self-service сброса пароля.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>Оплата = доступ</h3>
+        <p>Кнопка «Отметить оплату» продлевает подписку ровно на месяц (<code>subscriptionExpiresAt</code>). Не оплачено или истекло — кабинет закрыт.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>Дневной лимит</h3>
+        <p>6 генераций в календарный день по таймзоне клиента, сброс в его полночь. Админ может обнулить лимит вручную в один клик.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 04 · ПУТЬ КЛИЕНТА ═══════════════ -->
+<section class="slide" data-title="Путь клиента">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">04</span> Как это работает</p>
+    <h2>От логина до опубликованного поста — пять шагов</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="no">01</div>
+        <div><h3>Вход и профиль бизнеса</h3><p>Клиент входит по выданным данным и заполняет карточку: название, ниша, описание, сайт, фирменный цвет. Эти поля — сырьё для всех промптов ИИ.</p></div>
+      </div>
+      <div class="step">
+        <div class="no">02</div>
+        <div><h3>Подключение соцсетей</h3><p>Facebook Page и/или Instagram Business — по access-токену и ID страницы. Встроенные пошаговые гайды со скриншотами и проверка подключения (<code>/social/verify</code>) прямо в интерфейсе.</p></div>
+      </div>
+      <div class="step">
+        <div class="no">03</div>
+        <div><h3>Генерация контента</h3><p>Одна кнопка — и ИИ выдаёт 2 готовых поста: заголовок, продающий текст, хэштеги и изображение 1:1, привязанное к теме поста и бренд-цвету. Система помнит недавние посты и не повторяется.</p></div>
+      </div>
+      <div class="step">
+        <div class="no">04</div>
+        <div><h3>Модерация</h3><p>Посты попадают в очередь со статусом «На согласовании». Администратор одобряет, отклоняет или ставит расписание публикации.</p></div>
+      </div>
+      <div class="step">
+        <div class="no">05</div>
+        <div><h3>Публикация</h3><p>Сразу или по расписанию: фоновый воркер каждую минуту проверяет запланированные посты и отправляет их в Meta Graph API. В посте сохраняется <code>externalId</code> из соцсети.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 05 · AI ═══════════════ -->
+<section class="slide" data-title="AI-конвейер">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">05</span> AI-конвейер</p>
+    <h2>Не «текст по шаблону», а контент-стратегия</h2>
+    <p class="lede">Генерация — двухступенчатая: <strong>GPT</strong> (по умолчанию <code>gpt-4o-mini</code>) пишет тексты, <strong>gpt-image-1 / DALL-E</strong> рисует изображение по промпту, собранному из темы поста, ниши и фирменного цвета. Файлы сохраняются в <code>public/generated/</code> — у постов стабильные URL.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></span>Тексты с ротацией форматов</h3>
+        <p>10 редакционных форматов — обучающий совет, разрушение мифа, закулисье, чек-лист, инсайт индустрии, ответ на возражение, кейс, мягкое промо, сторителлинг, полезный факт. Плюс контекст последних постов, чтобы лента не превращалась в копипасту.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></span>Изображения по теме поста</h3>
+        <p>Промпт собирается детерминированно: компания, индустрия, тема поста («must be visually obvious»), сцена, бренд-цвет в освещении. Никаких случайных стоков — без текста, логотипов и водяных знаков.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>Три языка контента</h3>
+        <p>Русский, English, Հայերեն — язык выбирается на бизнесе и прокидывается в промпт. Хэштеги нормализуются автоматически.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-7 7l-4.4 4.4a1.5 1.5 0 0 0 2 2.2L9.7 15.5a5 5 0 0 0 7-7l-3 3-2.5-2.5 3.5-2.7z"/></svg></span>Мок-режим без ключа</h3>
+        <p>Нет <code>OPENAI_API_KEY</code> — работает встроенный генератор с плейсхолдерами picsum. Проект полностью демонстрируется без единого внешнего ключа.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 06 · ЖИЗНЕННЫЙ ЦИКЛ ═══════════════ -->
+<section class="slide" data-title="Жизненный цикл поста">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">06</span> Жизненный цикл поста</p>
+    <h2>Каждый пост проходит контроль качества</h2>
+    <p class="lede">Ничего не улетает в соцсети без одобрения: статусная машина из шести состояний отделяет генерацию от публикации, а модерацию — от планирования.</p>
+    <div class="flow" role="img" aria-label="Диаграмма статусов: черновик, на согласовании, одобрен, запланирован, опубликован; возможен статус отклонён">
+      <span class="pill p-slate"><span class="dot"></span>DRAFT · черновик</span>
+      <span class="arrow">→</span>
+      <span class="pill p-amber"><span class="dot"></span>PENDING_APPROVAL · на согласовании</span>
+      <span class="arrow">→</span>
+      <span class="pill p-green"><span class="dot"></span>APPROVED · одобрен</span>
+      <span class="arrow">→</span>
+      <span class="pill p-sky"><span class="dot"></span>SCHEDULED · запланирован</span>
+      <span class="arrow">→</span>
+      <span class="pill p-brand"><span class="dot"></span>PUBLISHED · опубликован</span>
+      <span class="arrow">⤷</span>
+      <span class="pill p-rose"><span class="dot"></span>REJECTED · отклонён</span>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h3>Гигиена очереди</h3><p>В очереди клиента до 50 постов; опубликованные старше 30 дней удаляются автоматически (настраивается через <code>POST_RETENTION_DAYS</code>).</p></div>
+      <div class="card"><h3>Следы публикации</h3><p>После публикации сохраняются <code>publishedAt</code> и <code>externalId</code>, который вернул Meta Graph API, — путь поста прослеживается до соцсети.</p></div>
+      <div class="card"><h3>Очистка одним кликом</h3><p>Клиент может очистить очередь черновиков (<code>POST /api/posts/clear</code>), не трогая запланированное и опубликованное.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 07 · ПУБЛИКАЦИЯ ═══════════════ -->
+<section class="slide" data-title="Публикация">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">07</span> Публикация и планировщик</p>
+    <h2>Meta Graph API + фоновый воркер</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>Прямая публикация</h3>
+        <p>Graph API <code>v21.0</code>: пост уходит на Facebook-страницу и/или в Instagram Business — режим выбирается на публикации. Для Instagram — двухфазный контейнерный flow, page-токен резолвится автоматически, ошибки Meta переводятся в понятные сообщения.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Воркер расписания</h3>
+        <p>Отдельный процесс (<code>npm run worker</code>, интервал 60 секунд) находит посты со статусом SCHEDULED, чьё время пришло, публикует их и попутно чистит устаревшие. Запускается и вручную — из админки или через <code>POST /api/scheduler/run</code>.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Демо-симуляция</h3>
+        <p>Без реального токена Meta публикация симулируется: статус меняется на PUBLISHED, проставляется фиктивный <code>externalId</code>. Весь flow можно показать заказчику без доступа к соцсетям.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></span>Проверка перед стартом</h3>
+        <p>Публикация не начнётся без готовой соцсети: система проверяет токен + ID страницы для каждого выбранного канала и точно объясняет, чего не хватает.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 08 · КАБИНЕТ КЛИЕНТА ═══════════════ -->
+<section class="slide" data-title="Кабинет клиента">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">08</span> Интерфейс · клиент</p>
+    <h2>Кабинет из трёх экранов</h2>
+    <p class="lede">Тёмно-синяя тема, минимум действий: клиенту не нужно разбираться в маркетинге — только смотреть и подтверждать.</p>
+    <div class="grid g3">
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>Дашборд</h3>
+        <p>Сводка: статистика постов по статусам, состояние подписки, остаток дневного лимита с обратным отсчётом до сброса, быстрые действия.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>Очередь контента</h3>
+        <p>Карточки постов с изображением, текстом, хэштегами и цветным статус-бейджем. Кнопка генерации, скачивание картинки, публикация, очистка очереди.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>Бизнес-профиль</h3>
+        <p>Карточка бизнеса + подключение соцсетей: поля токенов, проверка соединения и модальные гайды «как получить токен» для Facebook и Instagram.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 09 · АДМИНКА ═══════════════ -->
+<section class="slide" data-title="Админ-панель">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">09</span> Интерфейс · админ</p>
+    <h2>Админ-панель — пульт управления бизнесом</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Пользователи</h3>
+        <p>Создание и редактирование аккаунтов, активация/блокировка, отметка оплаты (+1 месяц подписки), сброс дневного лимита. Статус подписки виден по цветному бейджу.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9M14 17H5M17 4v6M8 14v6"/></svg></span>Бизнесы</h3>
+        <p>Все бизнес-профили клиентов в одном месте: создание, привязка к пользователю, редактирование ниши и брендинга.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.9.36 4.14 1"/></svg></span>Модерация контента</h3>
+        <p>Лента всех постов платформы: одобрить, отклонить, назначить время публикации или опубликовать немедленно — с фильтрами по статусу.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>Планировщик вручную</h3>
+        <p>Кнопка «Запустить планировщик» — прогнать цикл публикации без ожидания воркера. Удобно для демо и отладки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 10 · АРХИТЕКТУРА ═══════════════ -->
+<section class="slide" data-title="Архитектура">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">10</span> Архитектура</p>
+    <h2>Один репозиторий — фронт, API и воркер</h2>
+    <div class="arch">
+      <div class="arch-row">
+        <div class="node">
+          <span class="tag">клиенты</span>
+          <b>Кабинет клиента</b>
+          <p>Next.js App Router · <span style="font-family:var(--mono);font-size:12px">app/(client)</span> — дашборд, очередь, бизнес</p>
+        </div>
+        <div class="node">
+          <span class="tag">администраторы</span>
+          <b>Админ-панель</b>
+          <p><span style="font-family:var(--mono);font-size:12px">app/admin</span> — пользователи, бизнесы, модерация</p>
+        </div>
+        <div class="node">
+          <span class="tag">защита</span>
+          <b>Middleware + JWT</b>
+          <p>Сессия в httpOnly-cookie (jose), пароли bcrypt, ролевые guard'ы на каждом маршруте</p>
+        </div>
+      </div>
+      <p class="link-lbl">route handlers · app/api (~20 эндпоинтов)</p>
+      <div class="arch-row">
+        <div class="node brand">
+          <span class="tag">ядро</span>
+          <b>Бизнес-логика · server/</b>
+          <p>ai · images · publishing · scheduling · meta · subscription · post-cleanup — чистые модули, общие для API и воркера</p>
+        </div>
+        <div class="node brand">
+          <span class="tag">данные</span>
+          <b>Prisma ORM → PostgreSQL</b>
+          <p>5 моделей, каскадные удаления, уникальные ключи. SQLite для локальной разработки</p>
+        </div>
+        <div class="node brand">
+          <span class="tag">фон</span>
+          <b>Воркер</b>
+          <p>Отдельный процесс: публикация по расписанию + ретеншн-очистка, интервал 60 с</p>
+        </div>
+      </div>
+      <p class="link-lbl">внешние интеграции</p>
+      <div class="arch-row">
+        <div class="node ext">
+          <b>OpenAI</b>
+          <p>GPT для текстов, gpt-image-1 / DALL-E для изображений. Без ключа — мок-генератор</p>
+        </div>
+        <div class="node ext">
+          <b>Meta Graph API</b>
+          <p>Facebook Pages + Instagram Business, v21.0. Без токена — симуляция</p>
+        </div>
+        <div class="node ext">
+          <b>Tailwind CSS + TypeScript</b>
+          <p>Строгая типизация от схемы БД до компонентов, единая тёмная тема</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 11 · МОДЕЛЬ ДАННЫХ ═══════════════ -->
+<section class="slide" data-title="Модель данных">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">11</span> Модель данных</p>
+    <h2>Пять моделей, ничего лишнего</h2>
+    <div class="grid g3">
+      <div class="schema">
+        <header><b>User</b><span>роль · подписка</span></header>
+        <ul>
+          <li>email / username <i>unique</i></li>
+          <li>passwordHash <i>bcrypt</i></li>
+          <li>role <i>admin | client</i></li>
+          <li>isActive · paymentStatus</li>
+          <li>subscriptionExpiresAt</li>
+          <li class="rel">→ businesses[] <i>1:n</i></li>
+          <li class="rel">→ dailyUsage[] <i>1:n</i></li>
+        </ul>
+      </div>
+      <div class="schema">
+        <header><b>Business</b><span>бренд-профиль</span></header>
+        <ul>
+          <li>name · niche · description</li>
+          <li>website · logoUrl</li>
+          <li>brandColor <i>#4f7cff</i></li>
+          <li class="rel">→ user <i>cascade</i></li>
+          <li class="rel">→ socials[] · posts[]</li>
+        </ul>
+      </div>
+      <div class="schema">
+        <header><b>Post</b><span>единица контента</span></header>
+        <ul>
+          <li>title · caption · hashtags</li>
+          <li>imageUrl</li>
+          <li>status <i>6 состояний</i></li>
+          <li>scheduledAt · publishedAt</li>
+          <li>externalId <i>id из Meta</i></li>
+          <li class="rel">→ business <i>cascade</i></li>
+        </ul>
+      </div>
+      <div class="schema">
+        <header><b>SocialAccount</b><span>подключение</span></header>
+        <ul>
+          <li>provider <i>instagram | facebook</i></li>
+          <li>accessToken · pageId</li>
+          <li>instagramBusinessId</li>
+          <li class="rel">unique(business, provider)</li>
+        </ul>
+      </div>
+      <div class="schema">
+        <header><b>UserDailyUsage</b><span>лимиты</span></header>
+        <ul>
+          <li>dateKey <i>YYYY-MM-DD, TZ клиента</i></li>
+          <li>count <i>генераций за день</i></li>
+          <li class="rel">unique(user, dateKey)</li>
+        </ul>
+      </div>
+      <div class="schema">
+        <header><b>API</b><span>route handlers</span></header>
+        <ul>
+          <li>auth <i>login · logout · me</i></li>
+          <li>users <i>+ mark-paid · reset-limit</i></li>
+          <li>businesses <i>+ social · verify</i></li>
+          <li>posts <i>+ generate · publish · clear</i></li>
+          <li>scheduler <i>run</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 12 · ДЕПЛОЙ ═══════════════ -->
+<section class="slide" data-title="Деплой">
+  <div class="slide-inner">
+    <p class="eyebrow"><span class="n">12</span> Инфраструктура</p>
+    <h2>Продакшен на Docker: три контейнера и прокси</h2>
+    <p class="lede">Проект уже развёрнут на <strong>smmpromote.co</strong>. Docker Compose поднимает приложение, воркер и PostgreSQL; Traefik терминирует HTTPS с автоматическими сертификатами Let's Encrypt.</p>
+    <div class="grid g2" style="align-items:start">
+      <ul class="check">
+        <li><b>app</b> — Next.js-сборка, <code>prisma db push</code> при старте, порт 3000 за Traefik</li>
+        <li><b>worker</b> — тот же образ, команда <code>npm run worker</code>, интервал из <code>WORKER_INTERVAL_MS</code></li>
+        <li><b>db</b> — PostgreSQL в приватной docker-сети</li>
+        <li><b>Traefik</b> — маршрутизация smmpromote.co + www, TLS-резолвер letsencrypt</li>
+        <li><b>deploy.sh</b> — доставка на сервер одним скриптом</li>
+        <li>Секреты через окружение: <code>JWT_SECRET</code> обязателен, <code>OPENAI_API_KEY</code> опционален</li>
+      </ul>
+      <div class="term">
+        <header><i></i><i></i><i></i></header>
+        <pre><span class="c"># локальный запуск</span>
+<span class="b">$</span> npm install
+<span class="b">$</span> npm run db:push   <span class="c"># схема БД</span>
+<span class="b">$</span> npm run db:seed   <span class="c"># демо-данные</span>
+<span class="b">$</span> npm run dev       <span class="c"># localhost:3000</span>
+<span class="b">$</span> npm run worker    <span class="c"># планировщик</span>
+
+<span class="c"># продакшен</span>
+<span class="b">$</span> docker compose -f docker-compose.infra.yml up -d
+<span class="b">$</span> docker compose -f docker-compose.app.yml up -d --build</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 13 · ФИНАЛ ═══════════════ -->
+<section class="slide" id="final" data-title="Итоги">
+  <div class="slide-inner">
+    <p class="eyebrow" style="justify-content:center"><span class="n">13</span> Итоги</p>
+    <h2>Готовый продукт, а не прототип</h2>
+    <p class="lede" style="margin-left:auto;margin-right:auto;text-align:center">Полный цикл — от генерации контента ИИ до публикации в соцсетях — с подписочной моделью, лимитами, модерацией и продакшен-деплоем. Работает в демо-режиме без единого внешнего API-ключа.</p>
+    <div class="hero-tags" style="justify-content:center;margin-top:24px">
+      <span class="pill p-brand"><span class="dot"></span>smmpromote.co</span>
+      <span class="pill"><span class="dot"></span>github.com/XchoJan/marketolog</span>
+    </div>
+    <p class="foot">Marketolog · AI Marketing Agent SaaS · 2026</p>
+  </div>
+</section>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var rail = document.getElementById("rail");
+  var progress = document.getElementById("progress");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* rail dots */
+  slides.forEach(function (s, i) {
+    if (!s.id) s.id = "s" + (i + 1);
+    var a = document.createElement("a");
+    a.href = "#" + s.id;
+    a.title = s.dataset.title || "Слайд " + (i + 1);
+    a.setAttribute("aria-label", a.title);
+    rail.appendChild(a);
+  });
+  var dots = Array.prototype.slice.call(rail.children);
+
+  var current = 0;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        current = slides.indexOf(e.target);
+        dots.forEach(function (d, i) { d.classList.toggle("active", i === current); });
+      }
+    });
+  }, { threshold: 0.55 });
+  slides.forEach(function (s) { io.observe(s); });
+
+  /* progress bar */
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* keyboard nav */
+  window.addEventListener("keydown", function (ev) {
+    if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    var d = 0;
+    if (ev.key === "ArrowRight" || ev.key === "PageDown") d = 1;
+    else if (ev.key === "ArrowLeft" || ev.key === "PageUp") d = -1;
+    else if (ev.key === "Home") { slides[0].scrollIntoView(); ev.preventDefault(); return; }
+    else if (ev.key === "End") { slides[slides.length - 1].scrollIntoView(); ev.preventDefault(); return; }
+    if (d) {
+      ev.preventDefault();
+      var next = Math.min(Math.max(current + d, 0), slides.length - 1);
+      slides[next].scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+    }
+  });
+
+  /* hero: self-generating post */
+  var caption = "Закулисье Acme Studio: как мы превращаем идею клиента в бренд за 5 дней. Шаг 1 — глубокое погружение в нишу…";
+  var textEl = document.getElementById("pc-text");
+  var caret = document.getElementById("pc-caret");
+  var tags = document.getElementById("pc-tags");
+  var stText = document.getElementById("pc-status-text");
+  var stPill = document.getElementById("pc-status");
+  var stages = [
+    ["p-slate", "Черновик"],
+    ["p-amber", "На согласовании"],
+    ["p-green", "Одобрен"],
+    ["p-sky", "Запланирован"],
+    ["p-brand", "Опубликован"]
+  ];
+
+  function setStage(i) {
+    stPill.className = "pill " + stages[i][0];
+    stText.textContent = stages[i][1];
+  }
+
+  if (reduced) {
+    textEl.textContent = caption;
+    caret.style.display = "none";
+    tags.classList.add("show");
+    setStage(4);
+    return;
+  }
+
+  function cycle() {
+    textEl.textContent = "";
+    tags.classList.remove("show");
+    caret.style.display = "";
+    setStage(0);
+    var i = 0;
+    var typer = setInterval(function () {
+      textEl.textContent = caption.slice(0, ++i);
+      if (i >= caption.length) {
+        clearInterval(typer);
+        caret.style.display = "none";
+        tags.classList.add("show");
+        var s = 1;
+        var stager = setInterval(function () {
+          setStage(s++);
+          if (s >= stages.length) {
+            clearInterval(stager);
+            setTimeout(cycle, 5200);
+          }
+        }, 1100);
+      }
+    }, 34);
+  }
+  cycle();
+})();
+</script>
+
+</body>
+</html>
